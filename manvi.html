@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="description" content="A letter that couldn't fit inside a message." />
+<meta name="theme-color" content="#0a0612" />
+<title>For You — A Letter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Caveat:wght@400..700&family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Manrope:wght@200..800&display=swap" rel="stylesheet" />
+
+<style>
+:root{
+  --bg-0:#08050d;
+  --bg-1:#0d0815;
+  --bg-2:#160a1e;
+  --ink:#fff3ea;
+  --ink-mute:rgba(255,243,234,.62);
+  --ink-soft:rgba(255,243,234,.38);
+  --rose:#ff7aa2;
+  --rose-deep:#ff4f86;
+  --peach:#ffc89a;
+  --gold:#f9d29d;
+  --lilac:#c9a8ff;
+  --mint:#a8f0d2;
+  --glow:0 0 40px rgba(255,122,162,.45),0 0 80px rgba(201,168,255,.18);
+  --serif:"Instrument Serif",serif;
+  --serif-2:"Fraunces",serif;
+  --hand:"Caveat",cursive;
+  --sans:"Manrope",system-ui,sans-serif;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+html,body{background:var(--bg-0);color:var(--ink);font-family:var(--sans);overflow-x:hidden}
+html{scroll-behavior:smooth}
+body{min-height:100vh;line-height:1.5;letter-spacing:.01em;cursor:none}
+@media(hover:none){body{cursor:auto}}
+
+::selection{background:rgba(255,122,162,.35);color:#fff}
+img{max-width:100%;display:block}
+button{font:inherit;color:inherit;background:none;border:none;cursor:none}
+@media(hover:none){button{cursor:pointer}}
+a{color:inherit}
+
+/* ─────────  AMBIENT BACKDROP  ───────── */
+.backdrop{position:fixed;inset:0;z-index:-2;background:
+  radial-gradient(ellipse 1200px 800px at 20% 10%,rgba(255,122,162,.18),transparent 60%),
+  radial-gradient(ellipse 1000px 700px at 80% 30%,rgba(201,168,255,.16),transparent 60%),
+  radial-gradient(ellipse 900px 900px at 50% 80%,rgba(255,200,154,.10),transparent 60%),
+  linear-gradient(180deg,var(--bg-0),var(--bg-1) 50%,var(--bg-0))}
+
+.backdrop::before,.backdrop::after{
+  content:"";position:absolute;inset:-20%;background:
+    radial-gradient(closest-side,rgba(255,122,162,.22),transparent 70%),
+    radial-gradient(closest-side at 70% 30%,rgba(201,168,255,.18),transparent 70%);
+  filter:blur(60px);mix-blend-mode:screen;animation:drift 22s ease-in-out infinite alternate}
+.backdrop::after{animation-duration:32s;animation-direction:alternate-reverse;opacity:.6}
+
+@keyframes drift{
+  0%{transform:translate3d(-4%,-2%,0) rotate(0deg) scale(1)}
+  100%{transform:translate3d(5%,3%,0) rotate(6deg) scale(1.08)}
+}
+
+.grain{position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.06;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>")}
+
+#particles{position:fixed;inset:0;z-index:-1;pointer-events:none}
+
+/* ─────────  CURSOR  ───────── */
+.cursor-dot,.cursor-ring{position:fixed;top:0;left:0;pointer-events:none;z-index:9999;will-change:transform;mix-blend-mode:screen}
+.cursor-dot{width:6px;height:6px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);box-shadow:0 0 12px rgba(255,255,255,.8)}
+.cursor-ring{width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,122,162,.5);transform:translate(-50%,-50%);transition:width .35s cubic-bezier(.2,.8,.2,1),height .35s cubic-bezier(.2,.8,.2,1),background .35s,border-color .35s}
+.cursor-ring.is-hover{width:72px;height:72px;background:rgba(255,122,162,.10);border-color:rgba(255,200,154,.7)}
+.cursor-glow{position:fixed;width:420px;height:420px;border-radius:50%;pointer-events:none;z-index:0;background:radial-gradient(circle,rgba(255,122,162,.10),transparent 70%);transform:translate(-50%,-50%);filter:blur(20px);transition:opacity .4s}
+@media(hover:none){.cursor-dot,.cursor-ring,.cursor-glow{display:none}}
+
+/* ─────────  PROGRESS  ───────── */
+.progress{position:fixed;top:0;left:0;height:2px;width:0;background:linear-gradient(90deg,var(--rose),var(--peach),var(--lilac));z-index:200;box-shadow:0 0 8px var(--rose);transition:width .1s linear}
+
+/* ─────────  AUDIO TOGGLE  ───────── */
+.audio-ui{position:fixed;bottom:22px;right:22px;z-index:120;display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(15,8,22,.55);border:1px solid rgba(255,243,234,.12);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:999px;font-family:var(--sans);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-mute);transition:all .3s}
+.audio-ui:hover{color:var(--ink);border-color:rgba(255,122,162,.4);box-shadow:var(--glow)}
+.audio-ui .bars{display:flex;align-items:flex-end;gap:2px;height:14px;width:14px}
+.audio-ui .bars span{width:2px;background:var(--rose);border-radius:1px;height:30%;animation:eq 1.2s ease-in-out infinite}
+.audio-ui .bars span:nth-child(2){animation-delay:.15s}
+.audio-ui .bars span:nth-child(3){animation-delay:.3s}
+.audio-ui .bars span:nth-child(4){animation-delay:.45s}
+.audio-ui.muted .bars span{animation-play-state:paused;background:var(--ink-soft);height:30%}
+@keyframes eq{0%,100%{height:25%}50%{height:95%}}
+
+/* ─────────  LOADER  ───────── */
+.loader{position:fixed;inset:0;z-index:1000;background:var(--bg-0);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;transition:opacity 1s ease,visibility 1s}
+.loader.gone{opacity:0;visibility:hidden}
+.loader__word{font-family:var(--serif);font-size:clamp(28px,5vw,52px);font-style:italic;color:var(--ink);opacity:.9;letter-spacing:.01em}
+.loader__count{font-family:var(--sans);font-size:11px;letter-spacing:.4em;color:var(--ink-soft);text-transform:uppercase}
+.loader__bar{width:min(280px,70vw);height:1px;background:rgba(255,243,234,.12);position:relative;overflow:hidden}
+.loader__bar::after{content:"";position:absolute;left:0;top:0;height:100%;width:var(--p,0%);background:linear-gradient(90deg,transparent,var(--rose),var(--peach));transition:width .3s ease}
+.loader__sub{font-family:var(--hand);font-size:18px;color:var(--ink-mute);margin-top:6px}
+
+/* ─────────  SECTIONS BASE  ───────── */
+section{position:relative;width:100%;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:120px 24px;overflow:hidden}
+.wrap{width:100%;max-width:1180px;margin:0 auto;position:relative;z-index:2}
+.eyebrow{font-family:var(--sans);font-size:11px;letter-spacing:.5em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:18px;display:inline-flex;align-items:center;gap:14px}
+.eyebrow::before{content:"";width:24px;height:1px;background:currentColor;display:inline-block}
+
+h1,h2,h3{font-family:var(--serif);font-weight:400;line-height:1.05;letter-spacing:-.01em}
+.hand{font-family:var(--hand);font-weight:500}
+.serif{font-family:var(--serif)}
+.italic{font-style:italic}
+
+/* Reveal helpers */
+.r-up{opacity:0;transform:translateY(28px) translateZ(0);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
+.r-up.in{opacity:1;transform:translateY(0) translateZ(0)}
+.r-fade{opacity:0;transition:opacity 1.2s ease}
+.r-fade.in{opacity:1}
+.r-blur{opacity:0;filter:blur(14px);transition:opacity 1.2s ease,filter 1.2s ease}
+.r-blur.in{opacity:1;filter:blur(0)}
+.stag>*{opacity:0;transform:translateY(20px);transition:all .8s cubic-bezier(.2,.7,.2,1)}
+.stag.in>*{opacity:1;transform:translateY(0)}
+.stag.in>*:nth-child(1){transition-delay:0s}
+.stag.in>*:nth-child(2){transition-delay:.08s}
+.stag.in>*:nth-child(3){transition-delay:.16s}
+.stag.in>*:nth-child(4){transition-delay:.24s}
+.stag.in>*:nth-child(5){transition-delay:.32s}
+.stag.in>*:nth-child(6){transition-delay:.40s}
+
+/* Split-word animation for hero */
+.split .w{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.15em;margin-bottom:-.15em}
+.split .w>span{display:inline-block;transform:translateY(110%);transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
+.split.in .w>span{transform:translateY(0)}
+.split .w:nth-child(2)>span{transition-delay:.08s}
+.split .w:nth-child(3)>span{transition-delay:.16s}
+.split .w:nth-child(4)>span{transition-delay:.24s}
+.split .w:nth-child(5)>span{transition-delay:.32s}
+.split .w:nth-child(6)>span{transition-delay:.40s}
+.split .w:nth-child(7)>span{transition-delay:.48s}
+.split .w:nth-child(8)>span{transition-delay:.56s}
+
+/* ─────────  HERO  ───────── */
+#hero{padding:140px 24px}
+.hero-mark{position:absolute;top:32px;left:32px;font-family:var(--hand);font-size:18px;color:var(--ink-mute);z-index:3;display:flex;align-items:center;gap:10px}
+.hero-mark .heart{width:10px;height:10px;background:var(--rose);border-radius:50%;box-shadow:0 0 14px var(--rose);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.4);opacity:.5}}
+
+.hero-meta{position:absolute;top:38px;right:32px;font-family:var(--sans);font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--ink-soft);z-index:3;text-align:right;line-height:1.8}
+
+.hero{text-align:center;position:relative}
+.hero h1{font-size:clamp(48px,9vw,128px);font-style:italic;line-height:1;margin-bottom:28px}
+.hero h1 .line{display:block}
+.hero h1 .strike{font-family:var(--hand);font-style:normal;color:var(--rose);font-size:.85em;display:inline-block;transform:rotate(-3deg)}
+.hero p.lede{font-family:var(--serif);font-size:clamp(18px,2.2vw,26px);color:var(--ink-mute);max-width:560px;margin:0 auto 56px;line-height:1.4}
+.hero p.lede em{color:var(--peach)}
+
+.cta{position:relative;display:inline-flex;align-items:center;gap:14px;padding:22px 38px;border-radius:999px;background:linear-gradient(135deg,rgba(255,122,162,.18),rgba(201,168,255,.10));border:1px solid rgba(255,122,162,.4);color:var(--ink);font-family:var(--serif);font-size:20px;font-style:italic;letter-spacing:.01em;transition:all .4s cubic-bezier(.2,.7,.2,1);overflow:hidden;backdrop-filter:blur(10px)}
+.cta::before{content:"";position:absolute;inset:-2px;background:conic-gradient(from 0deg,var(--rose),var(--peach),var(--lilac),var(--rose));border-radius:inherit;opacity:0;transition:opacity .4s;z-index:-1;filter:blur(8px);animation:spin 4s linear infinite}
+.cta:hover{transform:translateY(-3px);box-shadow:0 20px 50px rgba(255,122,162,.35),0 0 0 4px rgba(255,122,162,.08)}
+.cta:hover::before{opacity:.7}
+.cta .arr{display:inline-block;transition:transform .4s}
+.cta:hover .arr{transform:translateX(6px)}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.scroll-hint{position:absolute;bottom:38px;left:50%;transform:translateX(-50%);font-family:var(--sans);font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--ink-soft);display:flex;flex-direction:column;align-items:center;gap:10px;z-index:3}
+.scroll-hint .line{width:1px;height:36px;background:linear-gradient(180deg,var(--ink-soft),transparent);position:relative;overflow:hidden}
+.scroll-hint .line::after{content:"";position:absolute;top:-100%;left:0;width:100%;height:100%;background:var(--rose);animation:slide 2.4s ease-in-out infinite}
+@keyframes slide{0%{top:-100%}100%{top:100%}}
+
+/* Floating decorative orbs in hero */
+.orb{position:absolute;border-radius:50%;filter:blur(40px);opacity:.55;pointer-events:none;mix-blend-mode:screen}
+.orb-1{width:240px;height:240px;background:radial-gradient(circle,var(--rose),transparent 70%);top:14%;left:8%;animation:float 14s ease-in-out infinite}
+.orb-2{width:300px;height:300px;background:radial-gradient(circle,var(--lilac),transparent 70%);bottom:10%;right:6%;animation:float 18s ease-in-out infinite reverse}
+.orb-3{width:180px;height:180px;background:radial-gradient(circle,var(--peach),transparent 70%);top:50%;left:55%;animation:float 12s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,-30px)}}
+
+/* ─────────  MEMORIES  ───────── */
+#memories{flex-direction:column;align-items:flex-start;padding:160px 24px}
+.mem-head{max-width:680px;margin:0 auto 100px;text-align:center}
+.mem-head h2{font-size:clamp(36px,6vw,80px);font-style:italic;margin-bottom:24px}
+.mem-head h2 em{color:var(--rose);font-family:var(--hand);font-style:normal;font-size:.85em;display:inline-block;transform:rotate(-2deg)}
+.mem-head p{font-family:var(--serif);font-size:clamp(16px,1.6vw,20px);color:var(--ink-mute);line-height:1.5}
+
+.timeline{position:relative;max-width:1080px;margin:0 auto;width:100%}
+.timeline::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:linear-gradient(180deg,transparent,rgba(255,243,234,.18) 6%,rgba(255,122,162,.4) 50%,rgba(255,243,234,.18) 94%,transparent);transform:translateX(-50%)}
+@media(max-width:760px){.timeline::before{left:18px}}
+
+.mem{position:relative;width:100%;display:grid;grid-template-columns:1fr 80px 1fr;gap:24px;margin-bottom:120px;align-items:center}
+.mem:last-child{margin-bottom:0}
+.mem .dot{width:14px;height:14px;border-radius:50%;background:var(--ink);justify-self:center;position:relative;box-shadow:0 0 0 6px rgba(255,243,234,.04),0 0 30px rgba(255,122,162,.7);z-index:2}
+.mem .dot::after{content:"";position:absolute;inset:-12px;border-radius:50%;border:1px solid rgba(255,122,162,.3);animation:halo 3s ease-out infinite}
+@keyframes halo{0%{transform:scale(1);opacity:.8}100%{transform:scale(2.4);opacity:0}}
+
+.mem.left .card{grid-column:1;text-align:right}
+.mem.right .card{grid-column:3}
+.mem .stamp{grid-column:2;font-family:var(--hand);font-size:22px;color:var(--rose);writing-mode:vertical-rl;transform:rotate(180deg);justify-self:center;align-self:start;margin-top:30px}
+
+.card{position:relative;padding:34px;background:linear-gradient(135deg,rgba(255,243,234,.04),rgba(255,243,234,.01));border:1px solid rgba(255,243,234,.08);border-radius:18px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);transition:all .6s cubic-bezier(.2,.7,.2,1);transform:translateZ(0)}
+.card::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(135deg,rgba(255,122,162,.3),transparent 50%,rgba(201,168,255,.2));-webkit-mask:linear-gradient(#000,#000) content-box,linear-gradient(#000,#000);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .5s;pointer-events:none}
+.card:hover::before{opacity:1}
+.card:hover{transform:translateY(-6px);box-shadow:0 30px 60px rgba(0,0,0,.4),0 0 0 1px rgba(255,122,162,.25),0 0 60px rgba(255,122,162,.15)}
+
+.card .date{font-family:var(--sans);font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--rose);margin-bottom:12px}
+.card h3{font-family:var(--serif);font-size:clamp(22px,2.2vw,30px);font-style:italic;margin-bottom:14px;line-height:1.2}
+.card p{font-family:var(--sans);font-size:15px;color:var(--ink-mute);line-height:1.65;font-weight:300}
+.card .pol{margin-bottom:22px;aspect-ratio:4/3;border-radius:12px;overflow:hidden;position:relative;background:#1a0f22}
+
+/* Polaroid SVG art "moments" */
+.pol svg{width:100%;height:100%;display:block}
+
+.card .tape{position:absolute;top:-10px;width:60px;height:18px;background:rgba(255,200,154,.18);border:1px solid rgba(255,200,154,.25);backdrop-filter:blur(4px);box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.mem.left .tape{right:30px;transform:rotate(6deg)}
+.mem.right .tape{left:30px;transform:rotate(-6deg)}
+
+@media(max-width:760px){
+  .mem{grid-template-columns:36px 1fr;gap:18px}
+  .mem .dot{grid-column:1;justify-self:center;margin-top:36px;align-self:flex-start}
+  .mem .stamp{display:none}
+  .mem.left .card,.mem.right .card{grid-column:2;text-align:left}
+  .mem.left .tape,.mem.right .tape{left:auto;right:auto;left:30px;transform:rotate(-4deg)}
+}
+
+/* ─────────  CONFESSION  ───────── */
+#confession{background:radial-gradient(ellipse at 50% 50%,#160a1e,#06030a 75%)}
+#confession::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 600px 400px at 50% 40%,rgba(255,122,162,.18),transparent 70%);pointer-events:none}
+
+.conf{max-width:760px;text-align:center;position:relative}
+.conf .eyebrow{justify-content:center;display:flex}
+.conf h2{font-size:clamp(34px,5vw,68px);font-style:italic;margin-bottom:48px;line-height:1.15}
+.conf h2 em{font-family:var(--hand);font-style:normal;color:var(--rose);font-size:.85em}
+
+.typewriter{font-family:var(--serif);font-style:italic;font-size:clamp(20px,2.6vw,32px);color:var(--ink);line-height:1.5;min-height:180px;margin-bottom:48px;letter-spacing:.005em}
+.typewriter .cursor-bar{display:inline-block;width:2px;height:1em;background:var(--rose);vertical-align:text-bottom;margin-left:4px;animation:blink 1s steps(2,end) infinite}
+@keyframes blink{50%{opacity:0}}
+
+.truths{display:flex;flex-direction:column;gap:14px;max-width:560px;margin:0 auto}
+.truth{position:relative;padding:22px 28px;border:1px solid rgba(255,243,234,.10);border-radius:14px;background:rgba(15,8,22,.4);backdrop-filter:blur(20px);cursor:none;transition:all .5s cubic-bezier(.2,.7,.2,1);text-align:left;overflow:hidden}
+@media(hover:none){.truth{cursor:pointer}}
+.truth::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--rose),var(--peach));transform:scaleY(0);transform-origin:top;transition:transform .5s}
+.truth:hover::before,.truth.open::before{transform:scaleY(1)}
+.truth:hover{border-color:rgba(255,122,162,.3);transform:translateX(4px)}
+.truth .q{display:flex;justify-content:space-between;align-items:center;gap:18px;font-family:var(--serif);font-size:18px;font-style:italic;color:var(--ink)}
+.truth .q .plus{font-family:var(--sans);font-size:20px;color:var(--rose);transition:transform .5s;font-weight:200}
+.truth.open .q .plus{transform:rotate(45deg)}
+.truth .a{max-height:0;overflow:hidden;transition:max-height .7s cubic-bezier(.2,.7,.2,1),margin-top .5s,opacity .5s;font-family:var(--serif);font-size:17px;color:var(--ink-mute);line-height:1.65;opacity:0;font-style:italic}
+.truth.open .a{max-height:300px;margin-top:18px;opacity:1}
+
+/* ─────────  FUNNY  ───────── */
+#funny{padding:140px 24px}
+.fun{text-align:center;max-width:760px;width:100%}
+.fun .eyebrow{justify-content:center;display:flex}
+.fun h2{font-size:clamp(36px,6vw,84px);font-style:italic;margin-bottom:18px}
+.fun h2 .hand{color:var(--peach);font-size:.95em;display:inline-block;transform:rotate(-3deg)}
+.fun p.sub{font-family:var(--serif);font-size:clamp(16px,1.8vw,20px);color:var(--ink-mute);margin-bottom:60px;font-style:italic}
+
+.choices{display:flex;flex-wrap:wrap;gap:18px;justify-content:center;margin-bottom:48px;min-height:80px;align-items:center}
+.chip{position:relative;padding:18px 30px;border-radius:999px;background:linear-gradient(135deg,rgba(255,243,234,.06),rgba(255,243,234,.02));border:1px solid rgba(255,243,234,.14);color:var(--ink);font-family:var(--serif);font-size:18px;font-style:italic;transition:transform .4s cubic-bezier(.34,1.56,.64,1),background .3s,border-color .3s,box-shadow .3s;will-change:transform}
+.chip:hover{background:linear-gradient(135deg,rgba(255,122,162,.18),rgba(255,200,154,.10));border-color:rgba(255,122,162,.5);box-shadow:0 12px 30px rgba(255,122,162,.25);transform:translateY(-2px) rotate(-1deg)}
+.chip.runner{position:relative;background:linear-gradient(135deg,rgba(255,200,154,.18),rgba(255,122,162,.10));border-color:rgba(255,200,154,.4)}
+.chip.runner::after{content:"😬";position:absolute;right:-26px;top:-10px;font-size:22px;transition:transform .3s}
+
+.reaction{position:fixed;pointer-events:none;font-family:var(--hand);font-size:24px;color:var(--peach);z-index:300;text-shadow:0 0 20px rgba(255,200,154,.5);opacity:0;transition:all .8s ease-out}
+.reaction.show{opacity:1;transform:translateY(-30px)}
+
+.giggle{font-family:var(--hand);font-size:clamp(20px,2.4vw,30px);color:var(--peach);min-height:60px;margin-top:24px;text-align:center;transition:all .5s}
+.giggle span{display:inline-block;animation:wiggle 2s ease-in-out infinite}
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-3deg)}75%{transform:rotate(3deg)}}
+
+/* ─────────  BEAUTIFUL MESSAGE  ───────── */
+#message{padding:160px 24px;background:radial-gradient(ellipse at 50% 0%,#1a0d24,#06030a 70%)}
+.msg{max-width:1080px;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+@media(max-width:880px){.msg{grid-template-columns:1fr;gap:60px}}
+
+.msg-text h2{font-size:clamp(36px,5.4vw,72px);font-style:italic;line-height:1.05;margin-bottom:32px}
+.msg-text h2 em{font-family:var(--hand);font-style:normal;color:var(--rose);font-size:.85em;display:block;transform:translateX(20px) rotate(-2deg)}
+.msg-text .ps{font-family:var(--serif);font-style:italic;font-size:clamp(17px,1.9vw,22px);color:var(--ink-mute);line-height:1.6;margin-bottom:24px}
+.msg-text .sig{font-family:var(--hand);font-size:28px;color:var(--peach);margin-top:40px}
+.msg-text .sig::before{content:"— ";color:var(--ink-soft)}
+
+.msg-visual{position:relative;aspect-ratio:1;display:grid;place-items:center}
+.polaroid{position:absolute;width:62%;background:#fff8ed;padding:14px 14px 50px;box-shadow:0 30px 60px rgba(0,0,0,.5),0 0 0 1px rgba(255,243,234,.04);transition:transform .6s cubic-bezier(.2,.7,.2,1),box-shadow .6s;will-change:transform}
+.polaroid:hover{transform:rotate(0deg) scale(1.05) translateY(-10px) !important;z-index:5;box-shadow:0 40px 80px rgba(0,0,0,.6),0 0 60px rgba(255,122,162,.2)}
+.polaroid .frame{aspect-ratio:1;background:#1a0f22;overflow:hidden;border-radius:2px;position:relative}
+.polaroid .caption{font-family:var(--hand);font-size:18px;text-align:center;color:#1a0f22;margin-top:10px;line-height:1.2}
+.polaroid:nth-child(1){transform:rotate(-8deg) translate(-22%,-12%)}
+.polaroid:nth-child(2){transform:rotate(6deg) translate(15%,-8%);z-index:2}
+.polaroid:nth-child(3){transform:rotate(-3deg) translate(-8%,18%);z-index:3}
+.polaroid:nth-child(4){transform:rotate(10deg) translate(20%,22%);z-index:1;width:48%}
+
+.viz{position:absolute;bottom:-30px;left:50%;transform:translateX(-50%);display:flex;align-items:flex-end;gap:3px;height:40px;width:200px;justify-content:center}
+.viz span{display:block;width:3px;background:linear-gradient(180deg,var(--rose),var(--peach));border-radius:2px;height:8px;transition:height .15s ease}
+
+/* ─────────  ENDING  ───────── */
+#ending{padding:160px 24px;text-align:center;min-height:100vh}
+#ending::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 800px 600px at 50% 50%,rgba(255,122,162,.18),transparent 70%);pointer-events:none}
+
+.end{max-width:760px;position:relative}
+.end .eyebrow{justify-content:center;display:flex}
+.end h2{font-size:clamp(44px,8vw,120px);font-style:italic;line-height:1;margin-bottom:24px}
+.end h2 em{font-family:var(--hand);font-style:normal;color:var(--rose);font-size:.8em;display:block;transform:rotate(-2deg)}
+.end p.sub{font-family:var(--serif);font-size:clamp(17px,1.9vw,22px);color:var(--ink-mute);font-style:italic;margin-bottom:64px;line-height:1.5}
+
+.end-buttons{display:flex;gap:22px;justify-content:center;flex-wrap:wrap}
+.big-btn{position:relative;padding:24px 56px;border-radius:999px;font-family:var(--serif);font-size:24px;font-style:italic;letter-spacing:.02em;transition:all .5s cubic-bezier(.2,.7,.2,1);overflow:hidden;border:1px solid;backdrop-filter:blur(10px);min-width:160px}
+.big-btn.yes{background:linear-gradient(135deg,var(--rose),var(--peach));color:#1a0612;border-color:transparent;box-shadow:0 20px 50px rgba(255,122,162,.45)}
+.big-btn.yes:hover{transform:translateY(-4px) scale(1.04);box-shadow:0 30px 70px rgba(255,122,162,.6),0 0 0 4px rgba(255,122,162,.15)}
+.big-btn.maybe{background:rgba(255,243,234,.04);border-color:rgba(255,243,234,.16);color:var(--ink)}
+.big-btn.maybe:hover{transform:translateY(-2px);border-color:rgba(255,200,154,.5);background:rgba(255,200,154,.08)}
+
+.final-state{margin-top:80px;font-family:var(--hand);font-size:clamp(28px,4vw,48px);color:var(--peach);min-height:80px;opacity:0;transition:opacity 1s,transform 1s;transform:translateY(20px)}
+.final-state.show{opacity:1;transform:translateY(0)}
+.final-state .em{color:var(--rose)}
+
+.footer-mark{margin-top:80px;font-family:var(--serif);font-style:italic;font-size:14px;color:var(--ink-soft);letter-spacing:.05em}
+.footer-mark::before,.footer-mark::after{content:"·";margin:0 14px;color:var(--rose)}
+
+/* ─────────  HEARTS / CONFETTI CANVAS  ───────── */
+.fx{position:fixed;inset:0;z-index:150;pointer-events:none}
+
+/* ─────────  MISC  ───────── */
+@media(max-width:600px){
+  .hero-mark,.hero-meta{font-size:11px}
+  .hero-meta{top:32px;right:18px}
+  .hero-mark{top:24px;left:18px}
+  .audio-ui{bottom:14px;right:14px;padding:8px 12px;font-size:10px}
+  section{padding:100px 18px}
+  #memories,#message,#ending{padding:120px 18px}
+  .card{padding:24px}
+}
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.2s !important}
+}
+</style>
+</head>
+
+<body>
+
+<div class="backdrop"></div>
+<div class="grain"></div>
+<canvas id="particles"></canvas>
+<canvas class="fx" id="fx"></canvas>
+
+<div class="cursor-glow" id="cursorGlow"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+
+<div class="progress" id="progress"></div>
+
+<button class="audio-ui muted" id="audioBtn" aria-label="Toggle music" data-hover>
+  <span class="bars" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+  <span class="lbl">Play music</span>
+</button>
+
+<!-- LOADER -->
+<div class="loader" id="loader" role="status" aria-label="Loading">
+  <div class="loader__sub">opening a letter for you</div>
+  <div class="loader__word italic" id="loaderWord">breathing</div>
+  <div class="loader__bar" id="loaderBar"></div>
+  <div class="loader__count" id="loaderCount">00</div>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="hero-mark"><span class="heart"></span> a letter, hand-coded</div>
+  <div class="hero-meta">No.&nbsp;001<br/>made at 02:47 AM</div>
+
+  <div class="hero wrap">
+    <h1 class="split" id="heroH1">
+      <span class="line"><span class="w"><span>I&nbsp;</span></span><span class="w"><span>made&nbsp;</span></span><span class="w"><span>you&nbsp;</span></span><span class="w"><span>a&nbsp;</span></span><span class="strike">whole</span></span>
+      <span class="line"><span class="w"><span>website&nbsp;</span></span><span class="w"><span>instead.</span></span></span>
+    </h1>
+    <p class="lede r-blur" id="heroLede">Because a text felt too small. Because <em>you</em> are not a text. Because some things deserve more than blue bubbles.</p>
+    <button class="cta r-up" id="heroCTA" data-hover>
+      <span>open the letter</span>
+      <span class="arr">→</span>
+    </button>
+  </div>
+
+  <div class="scroll-hint r-fade" id="scrollHint">
+    <span>scroll, slowly</span>
+    <span class="line"></span>
+  </div>
+</section>
+
+<!-- MEMORIES -->
+<section id="memories">
+  <div class="mem-head r-up">
+    <span class="eyebrow">Chapter One · The Receipts</span>
+    <h2>Things I remember, even <em>when I pretend</em> I don't.</h2>
+    <p>You said I had a bad memory. So I made a museum. Here are the exhibits.</p>
+  </div>
+
+  <div class="timeline">
+
+    <div class="mem left">
+      <div class="card r-up">
+        <span class="tape"></span>
+        <div class="pol"><svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
+          <defs><radialGradient id="g1" cx="30%" cy="30%"><stop offset="0%" stop-color="#ff9bb8"/><stop offset="100%" stop-color="#3a1a3e"/></radialGradient></defs>
+          <rect width="400" height="300" fill="url(#g1)"/>
+          <circle cx="120" cy="100" r="40" fill="#ffd4a3" opacity=".6"/>
+          <path d="M0,220 Q200,160 400,240 L400,300 L0,300 Z" fill="#1a0a24" opacity=".5"/>
+          <text x="200" y="180" text-anchor="middle" font-family="Caveat" font-size="22" fill="#fff5ed" opacity=".7">that café</text>
+        </svg></div>
+        <div class="date">EXHIBIT A · A TUESDAY</div>
+        <h3>The first time you laughed at my terrible joke.</h3>
+        <p>You tried to hide it behind your coffee. You failed. I have never been more proud of a stupid sentence in my life.</p>
+      </div>
+      <div class="dot"></div>
+      <div class="stamp">memory · 01</div>
+    </div>
+
+    <div class="mem right">
+      <div class="dot"></div>
+      <div class="stamp">memory · 02</div>
+      <div class="card r-up">
+        <span class="tape"></span>
+        <div class="pol"><svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
+          <defs><linearGradient id="g2" x1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a0b2e"/><stop offset="100%" stop-color="#6b3a5e"/></linearGradient></defs>
+          <rect width="400" height="300" fill="url(#g2)"/>
+          <circle cx="320" cy="60" r="30" fill="#fff5ed" opacity=".9"/>
+          <circle cx="320" cy="60" r="28" fill="#1a0b2e"/>
+          <g fill="#fff5ed" opacity=".5"><circle cx="60" cy="80" r="1"/><circle cx="120" cy="40" r="1.5"/><circle cx="200" cy="60" r="1"/><circle cx="80" cy="140" r="1.2"/><circle cx="280" cy="180" r="1"/><circle cx="340" cy="220" r="1.3"/><circle cx="150" cy="200" r="1"/></g>
+          <path d="M0,260 Q200,230 400,260 L400,300 L0,300 Z" fill="#0a0612"/>
+          <text x="200" y="160" text-anchor="middle" font-family="Caveat" font-size="20" fill="#ffc89a" opacity=".8">2:47 AM</text>
+        </svg></div>
+        <div class="date">EXHIBIT B · LATE, OBVIOUSLY</div>
+        <h3>Our 2 AM conversations about everything &amp; nothing.</h3>
+        <p>You told me your weirdest theory. I told you mine. We both got worse at sleeping. I'm not even a little sorry.</p>
+      </div>
+    </div>
+
+    <div class="mem left">
+      <div class="card r-up">
+        <span class="tape"></span>
+        <div class="pol"><svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
+          <defs><radialGradient id="g3" cx="50%" cy="60%"><stop offset="0%" stop-color="#ff7aa2"/><stop offset="80%" stop-color="#2a0e2a"/></radialGradient></defs>
+          <rect width="400" height="300" fill="url(#g3)"/>
+          <rect x="80" y="80" width="240" height="140" rx="12" fill="#fff5ed" opacity=".08" stroke="#ffc89a" stroke-opacity=".3"/>
+          <text x="200" y="160" text-anchor="middle" font-family="Caveat" font-size="34" fill="#fff5ed" opacity=".85">screenshot.</text>
+          <text x="200" y="190" text-anchor="middle" font-family="Caveat" font-size="18" fill="#ffc89a" opacity=".7">saved · 6:14 pm</text>
+        </svg></div>
+        <div class="date">EXHIBIT C · THE EVIDENCE</div>
+        <h3>That screenshot you swore you didn't take.</h3>
+        <p>You sent it back to me three weeks later. I knew. You knew I knew. We don't speak of it. (Except now. Here. Publicly.)</p>
+      </div>
+      <div class="dot"></div>
+      <div class="stamp">memory · 03</div>
+    </div>
+
+    <div class="mem right">
+      <div class="dot"></div>
+      <div class="stamp">memory · 04</div>
+      <div class="card r-up">
+        <span class="tape"></span>
+        <div class="pol"><svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
+          <defs><linearGradient id="g4" x2="100%"><stop offset="0%" stop-color="#3a1a3e"/><stop offset="100%" stop-color="#ff9bb8"/></linearGradient></defs>
+          <rect width="400" height="300" fill="url(#g4)"/>
+          <circle cx="140" cy="140" r="80" fill="#ffc89a" opacity=".4"/>
+          <circle cx="240" cy="140" r="80" fill="#c9a8ff" opacity=".4"/>
+          <text x="200" y="240" text-anchor="middle" font-family="Caveat" font-size="22" fill="#fff5ed" opacity=".85">pineapple. on. pizza.</text>
+        </svg></div>
+        <div class="date">EXHIBIT D · THE WAR</div>
+        <h3>The stupidest fight of our lives. About pizza.</h3>
+        <p>You said pineapple. I said heresy. We didn't talk for forty-three minutes. I counted. (You won. It's actually fine. Don't tell anyone.)</p>
+      </div>
+    </div>
+
+    <div class="mem left">
+      <div class="card r-up">
+        <span class="tape"></span>
+        <div class="pol"><svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
+          <defs><radialGradient id="g5" cx="50%" cy="40%"><stop offset="0%" stop-color="#ffc89a"/><stop offset="100%" stop-color="#2a0e2a"/></radialGradient></defs>
+          <rect width="400" height="300" fill="url(#g5)"/>
+          <path d="M150,200 Q200,140 250,200 Q220,250 200,250 Q180,250 150,200 Z" fill="#ff7aa2" opacity=".8"/>
+          <path d="M180,180 Q200,160 220,180 Q210,200 200,200 Q190,200 180,180 Z" fill="#fff5ed" opacity=".4"/>
+          <text x="200" y="80" text-anchor="middle" font-family="Caveat" font-size="20" fill="#fff5ed" opacity=".7">that look you do</text>
+        </svg></div>
+        <div class="date">EXHIBIT E · THE TELL</div>
+        <h3>The face you make when you're trying not to smile.</h3>
+        <p>You think you're hiding it. You are not hiding it. It's the best face. I have a whole mental folder.</p>
+      </div>
+      <div class="dot"></div>
+      <div class="stamp">memory · 05</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CONFESSION -->
+<section id="confession">
+  <div class="conf wrap r-up">
+    <span class="eyebrow">Chapter Two · The Truth</span>
+    <h2>Okay. <em>Real</em> talk.</h2>
+    <div class="typewriter" id="typer"><span class="cursor-bar"></span></div>
+
+    <div class="truths">
+      <button class="truth" data-hover>
+        <div class="q"><span>Do you want to know the truth?</span><span class="plus">+</span></div>
+        <div class="a">The truth is I rehearse texts to you. The truth is I leave the chat open just so the typing dots blink at me. The truth is, you scare me a little. In a good way. In the best way.</div>
+      </button>
+      <button class="truth" data-hover>
+        <div class="q"><span>Why did I go quiet?</span><span class="plus">+</span></div>
+        <div class="a">Because I didn't know how to say something this big in a message. Because I was scared of doing it wrong and losing the version of us where I hadn't done it wrong yet.</div>
+      </button>
+      <button class="truth" data-hover>
+        <div class="q"><span>What I should have said.</span><span class="plus">+</span></div>
+        <div class="a">"I'm sorry." Two words. I had them the whole time. I traded them for silence because silence felt safer. It wasn't. Silence cost more.</div>
+      </button>
+      <button class="truth" data-hover>
+        <div class="q"><span>If I could go back?</span><span class="plus">+</span></div>
+        <div class="a">I would answer the first message in seven seconds. I would tell you, out loud, that the worst day with you talking to me is better than the best day without it.</div>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- FUNNY -->
+<section id="funny">
+  <div class="fun wrap r-up">
+    <span class="eyebrow">Chapter Three · A Cease &amp; Desist</span>
+    <h2>So… <span class="hand">are you still mad?</span></h2>
+    <p class="sub">be honest. there's a button for every mood.</p>
+
+    <div class="choices" id="choices">
+      <button class="chip" data-mood="all" data-hover>not even a little</button>
+      <button class="chip" data-mood="some" data-hover>maybe a tiny bit</button>
+      <button class="chip" data-mood="okay" data-hover>okay, I deserved that</button>
+      <button class="chip runner" id="runner" data-hover>still kind of mad</button>
+    </div>
+
+    <div class="giggle" id="giggle"><span>tap one. I can take it.</span></div>
+  </div>
+</section>
+
+<!-- MESSAGE -->
+<section id="message">
+  <div class="msg wrap">
+    <div class="msg-text r-up">
+      <span class="eyebrow">Chapter Four · The Quiet Part</span>
+      <h2>You make Tuesdays<em>feel like Fridays.</em></h2>
+      <p class="ps">I notice things. The way you tuck your hair behind your ear when you're thinking. The way you say "okay" softer when something actually hurts. The way you laugh at the end of your own sentences, like you can't believe yourself.</p>
+      <p class="ps">I have a whole list. This letter is the shortest version of it.</p>
+      <div class="sig">yours, embarrassingly</div>
+    </div>
+
+    <div class="msg-visual r-fade">
+      <div class="polaroid" data-hover>
+        <div class="frame"><svg viewBox="0 0 200 200"><defs><radialGradient id="p1" cx="40%" cy="40%"><stop offset="0%" stop-color="#ffc89a"/><stop offset="100%" stop-color="#3a1a3e"/></radialGradient></defs><rect width="200" height="200" fill="url(#p1)"/><circle cx="80" cy="80" r="30" fill="#ff7aa2" opacity=".7"/></svg></div>
+        <div class="caption">us, probably</div>
+      </div>
+      <div class="polaroid" data-hover>
+        <div class="frame"><svg viewBox="0 0 200 200"><defs><linearGradient id="p2" x2="100%" y2="100%"><stop offset="0%" stop-color="#c9a8ff"/><stop offset="100%" stop-color="#1a0b2e"/></linearGradient></defs><rect width="200" height="200" fill="url(#p2)"/><path d="M40,140 Q100,80 160,140 L160,200 L40,200 Z" fill="#ff7aa2" opacity=".5"/></svg></div>
+        <div class="caption">a wednesday</div>
+      </div>
+      <div class="polaroid" data-hover>
+        <div class="frame"><svg viewBox="0 0 200 200"><defs><radialGradient id="p3" cx="60%" cy="60%"><stop offset="0%" stop-color="#ff7aa2"/><stop offset="100%" stop-color="#2a0e2a"/></radialGradient></defs><rect width="200" height="200" fill="url(#p3)"/><text x="100" y="115" text-anchor="middle" font-family="Caveat" font-size="28" fill="#fff5ed" opacity=".9">your laugh</text></svg></div>
+        <div class="caption">on repeat.</div>
+      </div>
+      <div class="polaroid" data-hover>
+        <div class="frame"><svg viewBox="0 0 200 200"><defs><linearGradient id="p4" x2="100%"><stop offset="0%" stop-color="#3a1a3e"/><stop offset="100%" stop-color="#ffc89a"/></linearGradient></defs><rect width="200" height="200" fill="url(#p4)"/><circle cx="100" cy="100" r="50" fill="#fff5ed" opacity=".3"/></svg></div>
+        <div class="caption">soon, hopefully</div>
+      </div>
+      <div class="viz" id="viz"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ENDING -->
+<section id="ending">
+  <div class="end wrap r-up">
+    <span class="eyebrow">Chapter Five · The Question</span>
+    <h2>So… <em>can we start again?</em></h2>
+    <p class="sub">no pressure. (a little pressure. one button. it's right there.)</p>
+
+    <div class="end-buttons">
+      <button class="big-btn yes" id="yesBtn" data-hover>yes &nbsp;·&nbsp; obviously</button>
+      <button class="big-btn maybe" id="maybeBtn" data-hover>hmm, maybe</button>
+    </div>
+
+    <div class="final-state" id="finalState"></div>
+    <div class="footer-mark r-fade">end of letter</div>
+  </div>
+</section>
+
+<script>
+// ════════════════════════════════════════════════════════════════════════════
+//  AMBIENT PARTICLE SYSTEM
+// ════════════════════════════════════════════════════════════════════════════
+(function particleField(){
+  const c = document.getElementById('particles');
+  const ctx = c.getContext('2d');
+  let w, h, dpr, parts = [];
+  const COUNT = window.innerWidth < 700 ? 40 : 80;
+  function size(){
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    w = c.width = window.innerWidth * dpr;
+    h = c.height = window.innerHeight * dpr;
+    c.style.width = window.innerWidth+'px';
+    c.style.height = window.innerHeight+'px';
+  }
+  size();
+  window.addEventListener('resize', size);
+  for(let i=0;i<COUNT;i++){
+    parts.push({
+      x: Math.random()*w,
+      y: Math.random()*h,
+      r: Math.random()*1.6+0.3,
+      vy: (Math.random()*0.3+0.05)*dpr,
+      vx: (Math.random()-0.5)*0.15*dpr,
+      o: Math.random()*0.6+0.15,
+      hue: Math.random() < 0.5 ? '#ff7aa2' : (Math.random() < 0.5 ? '#ffc89a' : '#c9a8ff'),
+      phase: Math.random()*Math.PI*2
+    });
+  }
+  function tick(t){
+    ctx.clearRect(0,0,w,h);
+    parts.forEach(p=>{
+      p.y -= p.vy;
+      p.x += p.vx + Math.sin((t/2000)+p.phase)*0.2*dpr;
+      if(p.y < -10) { p.y = h+10; p.x = Math.random()*w; }
+      if(p.x < -10) p.x = w+10;
+      if(p.x > w+10) p.x = -10;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r*dpr, 0, Math.PI*2);
+      ctx.fillStyle = p.hue;
+      ctx.globalAlpha = p.o * (0.6 + 0.4*Math.sin((t/1000)+p.phase));
+      ctx.shadowBlur = 12*dpr;
+      ctx.shadowColor = p.hue;
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1; ctx.shadowBlur = 0;
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+
+// ════════════════════════════════════════════════════════════════════════════
+//  CUSTOM CURSOR + GLOW
+// ════════════════════════════════════════════════════════════════════════════
+(function cursor(){
+  if (window.matchMedia('(hover:none)').matches) return;
+  const dot = document.getElementById('cursorDot');
+  const ring = document.getElementById('cursorRing');
+  const glow = document.getElementById('cursorGlow');
+  let mx = window.innerWidth/2, my = window.innerHeight/2;
+  let rx = mx, ry = my, gx = mx, gy = my;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  function loop(){
+    dot.style.transform = `translate(${mx}px,${my}px)`;
+    rx += (mx-rx)*0.18; ry += (my-ry)*0.18;
+    ring.style.transform = `translate(${rx}px,${ry}px) translate(-50%,-50%)`;
+    gx += (mx-gx)*0.08; gy += (my-gy)*0.08;
+    glow.style.transform = `translate(${gx}px,${gy}px) translate(-50%,-50%)`;
+    requestAnimationFrame(loop);
+  }
+  loop();
+  document.querySelectorAll('[data-hover]').forEach(el=>{
+    el.addEventListener('mouseenter',()=>ring.classList.add('is-hover'));
+    el.addEventListener('mouseleave',()=>ring.classList.remove('is-hover'));
+  });
+})();
+
+// ════════════════════════════════════════════════════════════════════════════
+//  SCROLL PROGRESS
+// ════════════════════════════════════════════════════════════════════════════
+(function scrollProgress(){
+  const bar = document.getElementById('progress');
+  window.addEventListener('scroll', ()=>{
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    const p = Math.max(0, Math.min(1, window.scrollY / max));
+    bar.style.width = (p*100)+'%';
+  }, {passive:true});
+})();
+
+// ════════════════════════════════════════════════════════════════════════════
+//  REVEAL ON SCROLL
+// ════════════════════════════════════════════════════════════════════════════
+(function reveal(){
+  const io = new IntersectionObserver((ents)=>{
+    ents.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    });
+  }, {threshold: 0.16, rootMargin: '0px 0px -8% 0px'});
+  document.querySelectorAll('.r-up,.r-fade,.r-blur,.stag,.split').forEach(el=>io.observe(el));
+})();
+
+// ════════════════════════════════════════════════════════════════════════════
+//  LOADER
+// ════════════════════════════════════════════════════════════════════════════
+(function loader(){
+  const loader = document.getElementById('loader');
+  const bar = document.getElementById('loaderBar');
+  const word = document.getElementById('loaderWord');
+  const count = document.getElementById('loaderCount');
+  const words = ['breathing','rehearsing','gathering','choosing','almost'];
+  let p = 0, wi = 0;
+  const t = setInterval(()=>{
+    p += Math.random()*8 + 4;
+    if (p >= 100) { p = 100; clearInterval(t); finish(); }
+    bar.style.setProperty('--p', p+'%');
+    count.textContent = String(Math.floor(p)).padStart(2,'0');
+    if(p > (wi+1)*20 && wi < words.length-1){ wi++; word.textContent = words[wi]; word.style.animation = 'none'; void word.offsetWidth; word.style.animation = ''; }
+  }, 140);
+  function finish(){
+    setTimeout(()=>{
+      loader.classList.add('gone');
+      document.getElementById('heroH1').classList.add('in');
+      setTimeout(()=>document.getElementById('heroLede').classList.add('in'), 600);
+      setTimeout(()=>document.getElementById('heroCTA').classList.add('in'), 1100);
+      setTimeout(()=>document.getElementById('scrollHint').classList.add('in'), 1500);
+    }, 400);
+  }
+})();
+
+// ════════════════════════════════════════════════════════════════════════════
+//  HERO CTA → SMOOTH SCROLL TO MEMORIES
+// ════════════════════════════════════════════════════════════════════════════
+document.getElementById('heroCTA').addEventListener('click', ()=>{
+  popHearts(window.innerWidth/2, window.innerHeight*0.65, 14);
+  document.getElementById('memories').scrollIntoView({behavior:'smooth', block:'start'});
+});
+
+// ════════════════════════════════════════════════════════════════════════════
+//  TYPEWRITER — CONFESSION
+// ════════════════════════════════════════════════════════════════════════════
+(function typewriter(){
+  const target = document.getElementById('typer');
+  const lines = [
+    "I've been writing this in my head for weeks.",
+    "Mostly at 2 a.m. Mostly badly.",
+    "And here's the part I keep getting stuck on…"
+  ];
+  let started = false;
+  const io = new IntersectionObserver((ents)=>{
+    ents.forEach(e=>{
+      if(e.isIntersecting && !started){
+        started = true;
+        runLines();
+        io.disconnect();
+      }
+    });
+  }, {threshold:0.4});
+  io.observe(target);
+
+  async function runLines(){
+    for(const line of lines){
+      await type(line);
+      await wait(900);
+      if (line !== lines[lines.length-1]) await erase();
+    }
+  }
+  function type(str){
+    return new Promise(res=>{
+      let i = 0;
+      const id = setInterval(()=>{
+        target.innerHTML = str.slice(0,i) + '<span class="cursor-bar"></span>';
+        i++;
+        if(i > str.length){ clearInterval(id); res(); }
+      }, 38);
+    });
+  }
+  function erase(){
+    return new Promise(res=>{
+      let curr = target.textContent;
+      const id = setInterval(()=>{
+        curr = curr.slice(0,-1);
+        target.innerHTML = curr + '<span class="cursor-bar"></span>';
+        if(curr.length === 0){ clearInterval(id); res(); }
+      }, 18);
+    });
+  }
+  function wait(ms){ return new Promise(r=>setTimeout(r,ms)); }
+})();
+
+// ════════════════════════════════════════════════════════════════════════════
+//  CONFESSION — ACCORDIONS
+// ════════════════════════════════════════════════════════════════════════════
+document.querySelectorAll('.truth').forEach(t=>{
+  t.addEventListener('click', ()=> t.classList.toggle('open'));
+});
+
+// ════════════════════════════════════════════════════════════════════════════
+//  FUNNY SECTION — CURSOR AVOIDING BUTTON + REACTIONS
+// ════════════════════════════════════════════════════════════════════════════
+(function funny(){
+  const runner = document.getElementById('runner');
+  const giggle = document.getElementById('giggle');
+  let dodges = 0;
+
+  // mobile fallback — runs on tap
+  if (window.matchMedia('(hover:none)').matches){
+    runner.addEventListener('click', e=>{
+      e.preventDefault();
+      const parent = runner.parentElement.getBoundingClientRect();
+      const x = (Math.random()-0.5) * Math.min(200, parent.width*0.5);
+      const y = (Math.random()-0.5) * 80;
+      runner.style.transform = `translate(${x}px,${y}px) rotate(${(Math.random()-0.5)*20}deg)`;
+      dodges++;
+      reactGiggle();
+    });
+  } else {
+    document.addEventListener('mousemove', e=>{
+      const r = runner.getBoundingClientRect();
+      const cx = r.left + r.width/2, cy = r.top + r.height/2;
+      const d = Math.hypot(e.clientX-cx, e.clientY-cy);
+      if(d < 130){
+        const angle = Math.atan2(cy-e.clientY, cx-e.clientX);
+        const force = (130-d) * 0.9;
+        let nx = Math.cos(angle)*force;
+        let ny = Math.sin(angle)*force;
+        // keep in viewport
+        const maxX = window.innerWidth*0.4;
+        nx = Math.max(-maxX, Math.min(maxX, nx));
+        ny = Math.max(-100, Math.min(100, ny));
+        runner.style.transform = `translate(${nx}px,${ny}px) rotate(${nx*0.15}deg)`;
+        dodges++;
+        if (dodges % 6 === 0) reactGiggle();
+      }
+    });
+  }
+
+  function reactGiggle(){
+    const msgs = ['yeah, that\'s fair.', 'okay okay okay.', 'I deserve this.', 'noted, with shame.', 'still typing my apology.'];
+    giggle.innerHTML = `<span>${msgs[Math.floor(Math.random()*msgs.length)]}</span>`;
+    floatingReaction(runner);
+  }
+
+  document.querySelectorAll('.chip:not(.runner)').forEach(c=>{
+    c.addEventListener('click', e=>{
+      const mood = c.dataset.mood;
+      const responses = {
+        all: 'okay you\'re lying but I\'ll take it 💀',
+        some: 'fair. very fair.',
+        okay: 'you ARE the bigger person. always have been.'
+      };
+      giggle.innerHTML = `<span>${responses[mood]}</span>`;
+      popHearts(e.clientX, e.clientY, 6);
+      pluck();
+    });
+  });
+
+  function floatingReaction(target){
+    const r = target.getBoundingClientRect();
+    const el = document.createElement('div');
+    el.className = 'reaction';
+    el.textContent = ['nope','😬','run','escape','wait—'][Math.floor(Math.random()*5)];
+    el.style.left = (r.left + r.width/2)+'px';
+    el.style.top = (r.top - 20)+'px';
+    document.body.appendChild(el);
+    requestAnimationFrame(()=>el.classList.add('show'));
+    setTimeout(()=>el.remove(), 900);
+  }
+})();
+
+// ════════════════════════════════════════════════════════════════════════════
+//  MUSIC VISUALIZER (decorative)
+// ════════════════════════════════════════════════════════════════════════════
+(function viz(){
+  const v = document.getElementById('viz');
+  if(!v) return;
+  const N = 28;
+  for(let i=0;i<N;i++){ const s = document.createElement('span'); v.appendChild(s); }
+  const spans = v.querySelectorAll('span');
+  function tick(t){
+    spans.forEach((s,i)=>{
+      const v1 = Math.sin(t/300 + i*0.4) * 0.5 + 0.5;
+      const v2 = Math.sin(t/180 + i*0.7) * 0.3;
+      const h = 6 + Math.max(0, v1+v2)*32;
+      s.style.height = h+'px';
+      s.style.opacity = 0.4 + v1*0.6;
+    });
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+
+// ════════════════════════════════════════════════════════════════════════════
+//  AUDIO — AMBIENT PAD via WEB AUDIO API
+// ════════════════════════════════════════════════════════════════════════════
+const audio = (() => {
+  let ctx = null, master = null, playing = false, nodes = [];
+  function ensure(){
+    if (ctx) return;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    ctx = new AC();
+    master = ctx.createGain();
+    master.gain.value = 0;
+    master.connect(ctx.destination);
+
+    // Gentle reverb-ish through delay+filter
+    const dly = ctx.createDelay(0.7); dly.delayTime.value = 0.32;
+    const fb = ctx.createGain(); fb.gain.value = 0.35;
+    const filt = ctx.createBiquadFilter(); filt.type='lowpass'; filt.frequency.value=1800;
+    master.connect(filt); filt.connect(dly); dly.connect(fb); fb.connect(dly); dly.connect(ctx.destination);
+
+    // Soft chord pad: A minor 9 voicing (A, C, E, G, B) — gentle, romantic
+    const freqs = [220, 261.63, 329.63, 392.00, 493.88];
+    freqs.forEach((f, i)=>{
+      const osc = ctx.createOscillator(); osc.type = i<2 ? 'sine' : 'triangle'; osc.frequency.value = f;
+      const g = ctx.createGain(); g.gain.value = 0;
+      osc.connect(g); g.connect(master);
+      // very slow tremolo
+      const lfo = ctx.createOscillator(); lfo.frequency.value = 0.08 + i*0.04;
+      const lfoGain = ctx.createGain(); lfoGain.gain.value = 0.06;
+      lfo.connect(lfoGain); lfoGain.connect(g.gain);
+      osc.start(); lfo.start();
+      // soft attack
+      g.gain.linearRampToValueAtTime(0.07/freqs.length * (1 - i*0.08), ctx.currentTime + 1.4);
+      nodes.push({osc, lfo, g});
+    });
+  }
+  function play(){
+    ensure();
+    if (!ctx) return;
+    if (ctx.state === 'suspended') ctx.resume();
+    master.gain.cancelScheduledValues(ctx.currentTime);
+    master.gain.linearRampToValueAtTime(0.32, ctx.currentTime + 1.2);
+    playing = true;
+  }
+  function pause(){
+    if (!ctx) return;
+    master.gain.cancelScheduledValues(ctx.currentTime);
+    master.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.6);
+    playing = false;
+  }
+  function tick(){
+    // optional uplift on yes
+  }
+  function uplift(){
+    if(!ctx) return;
+    const o = ctx.createOscillator(); o.type='sine'; o.frequency.setValueAtTime(440, ctx.currentTime);
+    o.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 1.2);
+    const g = ctx.createGain(); g.gain.value = 0; g.gain.linearRampToValueAtTime(0.1, ctx.currentTime+0.1); g.gain.linearRampToValueAtTime(0, ctx.currentTime+1.4);
+    o.connect(g); g.connect(master); o.start(); o.stop(ctx.currentTime+1.5);
+  }
+  return { play, pause, isPlaying:()=>playing, uplift, ensure };
+})();
+
+// short pluck for chip clicks
+function pluck(){
+  audio.ensure();
+  const A = window.AudioContext || window.webkitAudioContext; if(!A) return;
+  // grab ctx via a dummy play to ensure
+}
+
+const audioBtn = document.getElementById('audioBtn');
+audioBtn.addEventListener('click', ()=>{
+  if (audio.isPlaying()) {
+    audio.pause();
+    audioBtn.classList.add('muted');
+    audioBtn.querySelector('.lbl').textContent = 'Play music';
+  } else {
+    audio.play();
+    audioBtn.classList.remove('muted');
+    audioBtn.querySelector('.lbl').textContent = 'Mute';
+  }
+});
+
+// ════════════════════════════════════════════════════════════════════════════
+//  CLICK HEARTS
+// ════════════════════════════════════════════════════════════════════════════
+document.addEventListener('click', (e)=>{
+  // avoid spawning on audio toggle / buttons that already handle popping
+  if (e.target.closest('#audioBtn')) return;
+  // small confetti on any click — restrained
+  if (Math.random() < 0.6) popHearts(e.clientX, e.clientY, 2);
+});
+
+function popHearts(x, y, n=4){
+  const fx = document.getElementById('fx');
+  const ctx = fx.getContext('2d');
+  const dpr = Math.min(window.devicePixelRatio||1, 2);
+  fx.width = window.innerWidth*dpr; fx.height = window.innerHeight*dpr;
+  fx.style.width = window.innerWidth+'px'; fx.style.height = window.innerHeight+'px';
+
+  const arr = [];
+  for(let i=0;i<n;i++){
+    arr.push({
+      x: x*dpr + (Math.random()-0.5)*30*dpr,
+      y: y*dpr + (Math.random()-0.5)*10*dpr,
+      vx: (Math.random()-0.5)*2*dpr,
+      vy: -(Math.random()*3+2)*dpr,
+      g: 0.06*dpr,
+      r: Math.random()*8+8,
+      a: 1,
+      rot: Math.random()*Math.PI,
+      vrot: (Math.random()-0.5)*0.1,
+      color: ['#ff7aa2','#ffc89a','#c9a8ff'][Math.floor(Math.random()*3)]
+    });
+  }
+  function step(){
+    ctx.clearRect(0,0,fx.width,fx.height);
+    arr.forEach(p=>{
+      p.x += p.vx; p.y += p.vy; p.vy += p.g; p.a -= 0.012; p.rot += p.vrot;
+      drawHeart(ctx, p.x, p.y, p.r*dpr, p.rot, p.color, Math.max(0,p.a));
+    });
+    if(arr.some(p=>p.a>0)) requestAnimationFrame(step);
+    else ctx.clearRect(0,0,fx.width,fx.height);
+  }
+  requestAnimationFrame(step);
+}
+
+function drawHeart(ctx,x,y,size,rot,color,alpha){
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.translate(x,y); ctx.rotate(rot); ctx.scale(size/20, size/20);
+  ctx.fillStyle = color;
+  ctx.shadowBlur = 18; ctx.shadowColor = color;
+  ctx.beginPath();
+  ctx.moveTo(0,4);
+  ctx.bezierCurveTo(-12, -8, -16, 8, 0, 16);
+  ctx.bezierCurveTo(16, 8, 12, -8, 0, 4);
+  ctx.fill();
+  ctx.restore();
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+//  CONFETTI BURST (for YES)
+// ════════════════════════════════════════════════════════════════════════════
+function confettiStorm(){
+  const fx = document.getElementById('fx');
+  const ctx = fx.getContext('2d');
+  const dpr = Math.min(window.devicePixelRatio||1, 2);
+  fx.width = window.innerWidth*dpr; fx.height = window.innerHeight*dpr;
+  fx.style.width = window.innerWidth+'px'; fx.style.height = window.innerHeight+'px';
+
+  const palette = ['#ff7aa2','#ffc89a','#c9a8ff','#fff5ed','#a8f0d2'];
+  const arr = [];
+  const N = 220;
+  for(let i=0;i<N;i++){
+    arr.push({
+      x: (window.innerWidth/2 + (Math.random()-0.5)*200)*dpr,
+      y: (window.innerHeight*0.55)*dpr,
+      vx: (Math.random()-0.5)*10*dpr,
+      vy: -(Math.random()*14+6)*dpr,
+      g: 0.25*dpr,
+      w: (Math.random()*6+4)*dpr,
+      h: (Math.random()*4+3)*dpr,
+      rot: Math.random()*Math.PI*2,
+      vrot: (Math.random()-0.5)*0.4,
+      color: palette[Math.floor(Math.random()*palette.length)],
+      a: 1,
+      shape: Math.random() < 0.35 ? 'heart' : 'rect'
+    });
+  }
+  // also hearts rising
+  const hearts = [];
+  for(let i=0;i<40;i++){
+    hearts.push({
+      x: Math.random()*window.innerWidth*dpr,
+      y: window.innerHeight*dpr + Math.random()*200*dpr,
+      vy: -(Math.random()*2+1)*dpr,
+      vx: (Math.random()-0.5)*0.6*dpr,
+      r: Math.random()*14+10,
+      rot: Math.random()*Math.PI,
+      vrot: (Math.random()-0.5)*0.04,
+      color: ['#ff7aa2','#ffc89a','#c9a8ff'][Math.floor(Math.random()*3)],
+      a: 1
+    });
+  }
+
+  let frames = 0;
+  function step(){
+    frames++;
+    ctx.clearRect(0,0,fx.width,fx.height);
+    arr.forEach(p=>{
+      p.x += p.vx; p.y += p.vy; p.vy += p.g; p.rot += p.vrot;
+      if (p.y > fx.height + 40) p.a = 0;
+      ctx.save(); ctx.globalAlpha = p.a; ctx.translate(p.x,p.y); ctx.rotate(p.rot); ctx.fillStyle = p.color;
+      if (p.shape === 'heart') drawHeart(ctx,0,0,p.w*1.6,0,p.color,p.a);
+      else { ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); }
+      ctx.restore();
+    });
+    hearts.forEach(h=>{
+      h.x += h.vx; h.y += h.vy; h.rot += h.vrot;
+      if (h.y < -40) h.a -= 0.02;
+      drawHeart(ctx, h.x, h.y, h.r*dpr, h.rot, h.color, Math.max(0,h.a));
+    });
+    if(frames < 360) requestAnimationFrame(step);
+    else ctx.clearRect(0,0,fx.width,fx.height);
+  }
+  requestAnimationFrame(step);
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+//  ENDING — YES / MAYBE
+// ════════════════════════════════════════════════════════════════════════════
+const yesBtn = document.getElementById('yesBtn');
+const maybeBtn = document.getElementById('maybeBtn');
+const finalState = document.getElementById('finalState');
+let maybeCount = 0;
+
+yesBtn.addEventListener('click', ()=>{
+  confettiStorm();
+  // crank up music
+  if (!audio.isPlaying()) { audio.play(); audioBtn.classList.remove('muted'); audioBtn.querySelector('.lbl').textContent='Mute'; }
+  audio.uplift();
+  finalState.innerHTML = `you said yes. <span class="em">I'm going to be insufferable about this</span> for the rest of the week. (forever.)`;
+  finalState.classList.add('show');
+  yesBtn.disabled = true; maybeBtn.disabled = true;
+  yesBtn.style.transform = 'scale(0.96)';
+});
+
+maybeBtn.addEventListener('click', ()=>{
+  maybeCount++;
+  const states = [
+    `"maybe" is a yes wearing a disguise. I will wait.`,
+    `okay but the maybe button gets <span class="em">shyer</span> every time you press it.`,
+    `…you keep pressing it. that's basically a yes with extra steps.`,
+    `fine. fine! the yes button is right there. I see you looking.`
+  ];
+  finalState.innerHTML = states[Math.min(maybeCount-1, states.length-1)];
+  finalState.classList.add('show');
+  popHearts(window.innerWidth/2, window.innerHeight*0.55, 6);
+  if (maybeCount >= 4){
+    maybeBtn.textContent = "okay I'll stop";
+    maybeBtn.disabled = true;
+    yesBtn.style.transform = 'scale(1.08)';
+    yesBtn.style.boxShadow = '0 30px 80px rgba(255,122,162,.7), 0 0 0 6px rgba(255,122,162,.2)';
+  }
+});
+
+// ════════════════════════════════════════════════════════════════════════════
+//  resize fx canvas
+// ════════════════════════════════════════════════════════════════════════════
+window.addEventListener('resize', ()=>{
+  const fx = document.getElementById('fx');
+  const dpr = Math.min(window.devicePixelRatio||1, 2);
+  fx.width = window.innerWidth*dpr; fx.height = window.innerHeight*dpr;
+  fx.style.width = window.innerWidth+'px'; fx.style.height = window.innerHeight+'px';
+});
+</script>
+</body>
+</html>
